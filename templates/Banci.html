@@ -1,0 +1,439 @@
+{% extends "layout.html" %}
+{% block body %}
+	
+	<script type="text/javascript">
+
+	function show1(username,bumen,start,end,interval){
+		$('#myModal').modal('show');
+		$("#a_username").val(username);
+		$("#a_bumen").val(bumen);
+		$("#a_start").val(start);
+		$("#a_end").val(end);
+		$("#a_interval").val(interval);
+	}
+	function show2(username,bumen,start,end,interval){
+		$('#deleteModal').modal('show');
+		$("#b_username").val(username);
+		$("#b_bumen").val(bumen);
+		$("#b_start").val(start);
+		$("#b_end").val(end);
+		$("#b_interval").val(interval);
+	}
+	function show3(username){
+	$('#addModal').modal('show');
+	$("#c_username").val(username);
+	}
+	
+	function change(){
+		var username=$("#a_username").val();
+		var bumen=$("#a_bumen").val();
+		var start=$("#a_start").val();
+		var end=$("#a_end").val();
+		var interval=$("#a_interval").val();
+		var beizhu=$("#a_beizhu").val();
+		if(bumen==""){
+		$('#a_button').text("部门为必填项");
+		return;
+		}
+		if(start==""){
+		$('#a_button').text("开始时间为必填项");
+		return;
+		}
+		if(end==""){
+		$('#a_button').text("结束时间为必填项");
+		return;
+		}
+		if(interval==""){
+		$('#a_button').text("间隔时间为必填项");
+		return;
+		}
+		var dict1={"username":username,"start":start,"bumen":bumen,"beizhu":beizhu,"end":end,"interval":interval,"caozuo":"change"};
+		
+		$.ajax({
+			  type: "post",
+			  contentType: "application/json; charset=UTF-8",
+			  url: "/banci",
+			  xhrFields: {withCredentials: true},
+			  crossDomain: true,
+			  dataType: 'json',
+			  data:JSON.stringify(dict1),
+			  success:function(data){
+								 alert(data.status);
+								 location.replace(location.href);
+								}
+								});
+
+		}
+	function shanchu(){
+		var username=$("#b_username").val();
+		var bumen=$("#b_bumen").val();
+		var start=$("#b_start").val();
+		var end=$("#b_end").val();
+		var interval=$("#b_interval").val();
+		var beizhu=$("#b_beizhu").val();
+		
+		if(bumen==""){
+		$('#b_button').text("部门为必填项");
+		return;
+		}
+		if(start==""){
+		$('#b_button').text("开始时间为必填项");
+		return;
+		}
+		if(end==""){
+		$('#b_button').text("结束时间为必填项");
+		return;
+		}
+		if(interval==""){
+		$('#b_button').text("间隔时间为必填项");
+		return;
+		}
+		var dict1={"username":username,"start":start,"bumen":bumen,"beizhu":beizhu,"end":end,"interval":interval,"caozuo":"delete"};
+		
+		$.ajax({
+			  type: "post",
+			  contentType: "application/json; charset=UTF-8",
+			  url: "/banci",
+			  xhrFields: {withCredentials: true},
+			  crossDomain: true,
+			  dataType: 'json',
+			  data:JSON.stringify(dict1),
+			  success:function(data){
+								 alert(data.status);
+								 location.replace(location.href);
+								}
+								});
+
+		}
+	function add(){
+		var username=$("#c_username").val();
+		var bumen=$("#c_bumen").val();
+		var start=$("#c_start").val();
+		var end=$("#c_end").val();
+		var interval=$("#c_interval").val();
+		var beizhu=$("#c_beizhu").val();
+		if(bumen==""){
+		$('#c_button').text("部门为必填项");
+		return;
+		}
+		if(start==""){
+		$('#c_button').text("开始时间为必填项");
+		return;
+		}
+		if(end==""){
+		$('#c_button').text("结束时间为必填项");
+		return;
+		}
+		if(interval==""){
+		$('#c_button').text("间隔时间为必填项");
+		return;
+		}
+		var dict1={"username":username,"start":start,"bumen":bumen,"beizhu":beizhu,"end":end,"interval":interval,"caozuo":"add"};
+		
+		$.ajax({
+			  type: "post",
+			  contentType: "application/json; charset=UTF-8",
+			  url: "/banci",
+			  xhrFields: {withCredentials: true},
+			  crossDomain: true,
+			  dataType: 'json',
+			  data:JSON.stringify(dict1),
+			  success:function(data){
+								 alert(data.status);
+								 location.replace(location.href);
+								}
+								});
+	
+	
+	}
+	</script>
+ 
+		<h2> 班次</h2>
+		</br>
+		<button class="btn btn-default" onclick="show3('{{username}}');">增加一个班次</button>
+		
+		
+		<div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>管理员名</th>
+                  <th>设置部门</th>
+                  <th>签到截止时间</th>
+                  <th>签退开始时间</th>
+				  <th>允许打卡时间</th>
+				  <th>操作</th>
+                </tr>
+              </thead>
+			  <tbody>
+				{% for i in data.showdict %}
+				<tr>
+					<td>{{ i.username }}</td>
+					<td>{{ i.bumen }}</td>
+					<td>
+						<a href="javascript:show1('{{i.username}}','{{i.bumen}}','{{i.start}}','{{i.end}}','{{i.interval}}');">
+						{{ i.start }}</a>
+					</td>
+					<td>
+						<a href="javascript:show1('{{i.username}}','{{i.bumen}}','{{i.start}}','{{i.end}}','{{i.interval}}');">
+						{{ i.end }}</a>
+					</td>
+					<td>
+						<a href="javascript:show1('{{i.username}}','{{i.bumen}}','{{i.start}}','{{i.end}}','{{i.interval}}');">
+						{{ i.interval }}</a>
+					</td>
+					<td>
+						<button class="btn btn-default" 
+						onclick="show2('{{i.username}}','{{i.bumen}}','{{i.start}}','{{i.end}}','{{i.interval}}');">
+						删除
+						</button>
+					</td>
+				</tr>
+				{%else%}
+				<tr>
+                  <td>无</td>
+                  <td>无</td>
+                  <td>无</td>
+                  <td>无</td>
+				  <td>无</td>
+				  <td>无</td>
+                </tr>
+				{% endfor %}
+                
+				
+				
+			</tbody>
+            </table>
+		</div>
+		
+		
+		<div class="pull-right">
+		<ul class="pagination"> 
+		
+			{% if data.showye==1%} 
+			<li class=''><a href='/banci?p=1'>首页</a></li>
+			<li class=''><a href='/banci?p={{data.nowpage-1}}'>上一页</a></li> 
+			{%endif%} 
+			
+			{% for dic in data.page_list %} 
+			{% if dic==data.nowpage%} 
+			<li class="active"><a href="/banci?p={{dic}}">{{dic}}</a></li> 
+			{%else%} 
+			<li><a href="/banci?p={{dic}}">{{dic}}</a></li> 
+			{%endif%} 
+			{%endfor%} 
+			
+			{% if data.nowpage < data.total%} 
+			<li class=''><a href='/banci?p={{data.nowpage+1}}'>下一页</a></li> 
+			<li class=''><a href='/banci?p={{data.total}}'>尾页</a></li>
+			{%endif%}
+		
+		
+		共{{data.total}}页 
+		</ul>
+		</div>
+		
+			
+        </div>
+      </div>
+    </div>
+	
+	
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">修改班次</h4>
+            </div>
+            <div class="modal-body">
+			<form class="form-horizontal" role="form">
+				<div class="form-group">
+                            <label for="user_id" class="col-sm-3 control-label">管理员名</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="a_username" name="a_username" value=""
+                                   readonly='readonly'     required>
+                            </div>
+                </div>
+				<div class="form-group">
+                            <label for="user_id" class="col-sm-3 control-label">部门设置</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="a_bumen" name="a_bumen" value=""
+                                       placeholder="请输入设置的部门" required>
+                            </div>
+                </div>
+				<div class="form-group">
+                            <label for="user_id" class="col-sm-3 control-label">开始时间</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="a_start" name="a_start" value=""
+                                       placeholder="例如：2018.5.30 9:00" required>
+                            </div>
+                </div>
+				<div class="form-group">
+                            <label for="user_id" class="col-sm-3 control-label">结束时间</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="a_end" name="a_end" value=""
+                                       placeholder="例如：2018.5.30 20:00" required>
+                            </div>
+                </div>
+				<div class="form-group">
+                            <label for="user_id" class="col-sm-3 control-label">间隔时间</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="a_interval" name="a_interval" value=""
+                                       placeholder="例如：15" required>
+                            </div>
+                </div>
+				
+				<div class="form-group">
+                            <label for="remark" class="col-sm-3 control-label">备注</label>
+                            <div class="col-sm-9">
+                                <textarea  class="form-control"  name="remark" value="" id="a_beizhu"
+                                       placeholder="备注"></textarea>
+                            </div>
+                </div>
+				
+			</form>
+			</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" id="a_button" >关闭</button>
+                <button type="button"  class="btn btn-primary" onclick="change()">修改</button>
+            </div>
+        </div>
+    </div>
+</div>
+	
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">删除一个班次</h4>
+            </div>
+            <div class="modal-body">
+			<form class="form-horizontal" role="form">
+				<div class="form-group">
+                            <label for="user_id" class="col-sm-3 control-label">管理员名</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="b_username" name="b_username" value=""
+                                   readonly='readonly'     required>
+                            </div>
+                </div>
+				<div class="form-group">
+                            <label for="user_id" class="col-sm-3 control-label">部门设置</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="b_bumen" name="b_bumen" value=""
+                                 readonly='readonly'      placeholder="请输入设置的部门" required>
+                            </div>
+                </div>
+				<div class="form-group">
+                            <label for="user_id" class="col-sm-3 control-label">开始时间</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="b_start" name="b_start" value=""
+                                readonly='readonly'       placeholder="例如：2018.5.30 9:00" required>
+                            </div>
+                </div>
+				<div class="form-group">
+                            <label for="user_id" class="col-sm-3 control-label">结束时间</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="b_end" name="b_end" value=""
+                              readonly='readonly'         placeholder="例如：2018.5.30 20:00" required>
+                            </div>
+                </div>
+				<div class="form-group">
+                            <label for="user_id" class="col-sm-3 control-label">间隔时间</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="b_interval" name="b_interval" value=""
+                              readonly='readonly'         placeholder="例如：15" required>
+                            </div>
+                </div>
+				
+				<div class="form-group">
+                            <label for="remark" class="col-sm-3 control-label">备注</label>
+                            <div class="col-sm-9">
+                                <textarea  class="form-control"  name="remark" value="" id="b_beizhu"
+                                       placeholder="备注"></textarea>
+                            </div>
+                </div>
+				
+			</form>
+			</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" id="b_button" >关闭</button>
+                <button type="button"  class="btn btn-primary" onclick="shanchu()" >删除</button>
+            </div>
+        </div>
+    </div>
+</div>
+	
+	
+	
+
+	
+<div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title" id="myModalLabel">增加一个班次</h4>
+            </div>
+            <div class="modal-body">
+			<form class="form-horizontal" role="form">
+				<div class="form-group">
+                            <label for="user_id" class="col-sm-3 control-label">管理员名</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="c_username" name="c_username" value=""
+                                   readonly='readonly'     required>
+                            </div>
+                </div>
+				<div class="form-group">
+                            <label for="user_id" class="col-sm-3 control-label">部门设置</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="c_bumen" name="c_bumen" value=""
+                                       placeholder="请输入设置的部门" required>
+                            </div>
+                </div>
+				<div class="form-group">
+                            <label for="user_id" class="col-sm-3 control-label">开始时间</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="c_start" name="c_start" value=""
+                                       placeholder="例如：2018.5.30 9:00" required>
+                            </div>
+                </div>
+				<div class="form-group">
+                            <label for="user_id" class="col-sm-3 control-label">结束时间</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="c_end" name="c_end" value=""
+                                       placeholder="例如：2018.5.30 20:00" required>
+                            </div>
+                </div>
+				<div class="form-group">
+                            <label for="user_id" class="col-sm-3 control-label">间隔时间</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="c_interval" name="c_interval" value=""
+                                       placeholder="例如：15" required>
+                            </div>
+                </div>
+				
+				<div class="form-group">
+                            <label for="remark" class="col-sm-3 control-label">备注</label>
+                            <div class="col-sm-9">
+                                <textarea  class="form-control"  name="remark" value="" id="c_beizhu"
+                                       placeholder="备注"></textarea>
+                            </div>
+                </div>
+				
+			</form>
+			</div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal" id="c_button">关闭</button>
+                <button type="button"  class="btn btn-primary" onclick="add()">增加</button>
+            </div>
+        </div>
+    </div>
+</div>
+	
+	
+	
+	
+{% endblock %}
+	

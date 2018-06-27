@@ -1,0 +1,57 @@
+	<!DOCTYPE html>
+<html lang="zh-CN">
+ <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="xeon">
+    <meta name="author" content="">
+	
+	<title>管理员界面</title>
+	
+	<link href="../static/bootstrap.min.css" rel="stylesheet">
+	<link href="../static/bootstrap-datetimepicker.min.css" rel="stylesheet">
+	<script src="../static/jquery.min.js"></script>
+	<script src="../static/bootstrap.min.js"></script>
+	
+
+		
+    
+	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+	<link href="../static/ie10-viewport-bug-workaround.css" rel="stylesheet">
+	<link href="../static/dashboard.css" rel="stylesheet">
+	<script src="../static/holder.min.js"></script>
+	<script type="text/javascript" src="../static/ie-emulation-modes-warning.js"></script>
+	
+	<script src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+	
+	<link href="../static/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+    <script src="../static/moment-with-locales.js"></script>
+    <script src="../static/bootstrap-datetimepicker.min.js"></script>
+    <script src="../static/bootstrap-datetimepicker.zh-CN.js"></script>
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+	
+
+	
+  </head>
+  <body>
+  <input size="16" type="text" value="" class="form_datetime">
+</body>
+
+	<script type="text/javascript">
+	$(".form_datetime").datetimepicker({
+	format: 'yyyy-mm-dd',//显示格式
+	todayHighlight: 1,//今天高亮
+	minView: "month",//设置只显示到月份
+	startView:2,
+	forceParse: 0,
+	showMeridian: 1,
+	autoclose: 1//选择后自动关闭
+	});
+	</script>
+</html>
