@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1，minimum-scale=1.0, maximum-scale=1.0">
+    <meta name="description" content="xeon">
+    <meta name="author" content="">
+	
+	<link href="../static/bootstrap.min.css" rel="stylesheet">
+	<script src="../static/jquery.min.js"></script>
+	<script src="../static/bootstrap.min.js"></script>
+	
+	<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.bootcss.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+	
+<script type="text/javascript">
+function check(){
+var allcookies = document.cookie.split(";");
+for (var i=0; i<allcookies.length; i++)
+  {
+     var x=allcookies[i].split("=");
+     if(x[0].indexOf("ButtonState")!=-1)
+	    {
+		  if(x[1]=="disabled")document.getElementById("dakaBUTTON").disabled=true;
+		  alert('aaa');
+		  break;
+		}
+  }
+ }
+  
+function daka(){
+var Name=document.getElementById("name").innerHTML;
+var Banci=document.getElementById("banci").innerHTML;
+var dict1={"username":Name,"banci":Banci};
+$.ajax({
+		  type: "post",
+		  contentType: "application/json; charset=UTF-8",
+		  url: "/daka",
+		  xhrFields: {withCredentials: true},
+          crossDomain: true,
+		  dataType: 'json',
+		  data:JSON.stringify(dict1),
+		  success:function(data){
+		                     alert(data.status);
+							 location.replace(location.href);
+		                    }
+							});
+
+}
+
+
+
+
+</script>
+	
+	<title>打卡</title>
+	
+	
+</head>
+
+
+<body>
+
+   <div class="container">
+	<div class="row clearfix">
+		<div class="col-md-12 column">
+		<div class="row clearfix">
+				<div class="col-md-4 column">
+				</div>
+				
+				
+				<div class="col-md-4 column">
+				
+				<img src="../static/xeno3.png" class="img-responsive" alt="Cinque Terre">
+				<p id="name" class="pull-left"><strong>{{ name }}</strong> 欢迎您!</p>
+				
+				<p class="pull-right">
+				<a href="/out" >退出登录</a></p>
+				<br/>
+				
+				<h3 align=center>当前班次</h3>
+				<HR>
+				
+				
+				<table class="table">
+				<thead>
+                <tr>
+					<th>日期</th>
+					<th>开始时间</th>
+					<th>结束时间</th>
+					<th>类型</th>
+					
+                </tr>
+              </thead>
+					<tbody>
+						
+						<tr>
+							<td>
+							<p>日期</p>
+							</td>
+							<td>
+							<p id="banci">{{ banci }}</p>
+							</td>
+						</tr>
+						
+					</tbody>
+				</table>
+				<p align=center>
+				{% if button %}
+				<input type="button" class="btn btn-lg" id="dakaBUTTON" value="{{ button }}" onClick="daka()">
+				{% else %}
+				<input type="button" class="btnbtn-lg" id="dakaBUTTON" value="立刻打卡" onClick="daka()">
+				{% endif %}
+				
+				</p>
+				
+				
+				
+			
+			
+			
+				</div>
+   
+				
+				
+				<div class="col-md-4 column">
+				</div>
+			</div>
+		
+		</div>
+	</div>
+</div>
+   
+
+</body>
+</html>
