@@ -1,5 +1,8 @@
 *.iml
 .DS_Store
 /.idea
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
 /.venv
 *.db
