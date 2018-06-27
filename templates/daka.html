@@ -76,41 +76,49 @@ $.ajax({
 				
 				<div class="col-md-4 column">
 				
-				<p> <img src="../static/xeno2.png" class="img-responsive" alt="Cinque Terre"> </p>
+				<img src="../static/xeno3.png" class="img-responsive" alt="Cinque Terre">
+				<p id="name" class="pull-left"><strong>{{ name }}</strong> 欢迎您!</p>
+				
+				<p class="pull-right">
+				<a href="/out" >退出登录</a></p>
+				<br/>
+				
+				<h3 align=center>当前班次</h3>
+				<HR>
 				
 				
-				<h2 align=center>打卡</h2>
-				
-				
-				<table>
+				<table class="table">
+				<thead>
+                <tr>
+					<th>日期</th>
+					<th>开始时间</th>
+					<th>结束时间</th>
+					<th>类型</th>
+					
+                </tr>
+              </thead>
 					<tbody>
+						
 						<tr>
 							<td>
-							<p>班次：</p>
+							<p>日期</p>
 							</td>
 							<td>
 							<p id="banci">{{ banci }}</p>
 							</td>
 						</tr>
-						<tr>
-							<td>
-							<p>姓名：</p>
-							</td>
-							<td>
-							<p id="name">{{ name }}</p>
-							</td>
-						</tr>
+						
 					</tbody>
 				</table>
-				
+				<p align=center>
 				{% if button %}
-				<input type="button" class="btn btn-success btn-lg" id="dakaBUTTON" value="{{ button }}" onClick="daka()" disabled>
+				<input type="button" class="btn btn-lg" id="dakaBUTTON" value="{{ button }}" onClick="daka()">
 				{% else %}
-				<input type="button" class="btn btn-success btn-lg" id="dakaBUTTON" value="立刻打卡" onClick="daka()">
+				<input type="button" class="btnbtn-lg" id="dakaBUTTON" value="立刻打卡" onClick="daka()">
 				{% endif %}
 				
+				</p>
 				
-				<input type="button" class="btn btn-danger" value="退出账号" onClick="window.location.href='/out'">
 				
 				
 			

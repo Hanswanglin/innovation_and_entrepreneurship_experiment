@@ -135,7 +135,7 @@ def changeinformation():
 def banciget():
     if request.method == 'POST':
         myjson = json.loads(request.get_data())
-        banci1={'username':"admin", 'bumen':"清洁部",'start':"2018.5.30 9:00", 'end':"2018.5.30 20:00", 'interval':15}
+        banci1={'id':2333, 'bumen':"清洁部",'start':"2018.5.30 9:00", 'end':"2018.5.30 20:00", 'interval':15}
         list=[]
         for i in range(10):
             list.append(banci1)
@@ -147,7 +147,7 @@ def banciget():
 def bancichange():
     if request.method == 'POST':
         myjson = json.loads(request.get_data())
-        username = myjson['username']
+        id = myjson['id']
         bumen = myjson['bumen']
         start = myjson['start']
         end = myjson['end']

@@ -433,10 +433,10 @@ def test_banci_get():
 
 
 #test for url "/banci/change"
-def test_banci_change(username,bumen,start,end,interval,caozuo):
+def test_banci_change(id,bumen,start,end,interval,caozuo):
     testname = "test_banci_change"
     url = "http://%s:%s/banci/change" % (ip, port)
-    data = {"username": username, "bumen": bumen, 'start': start, 'end': end, 'interval': str(interval),'caozuo':caozuo}
+    data = {"id":id, "bumen": bumen, 'start': start, 'end': end, 'interval': str(interval),'caozuo':caozuo}
     result = go_url(url, data)
     global mutex
     mutex.acquire()
