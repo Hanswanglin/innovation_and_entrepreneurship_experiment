@@ -1,7 +1,9 @@
 from flask import Flask, request, session,  redirect, url_for, abort, \
      render_template, flash,make_response,jsonify,json
 from urllib import request as api,parse
-import time
+import datetime
+
+from Link_db import Link_db
 app=Flask(__name__)
 app.config.update(dict(DEBUG=True, SECRET_KEY='Chuangxin!!!!!233', ))
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
@@ -10,16 +12,21 @@ app.config['JSON_AS_ASCII'] = False
 
 @app.route('/login', methods=['POST'])
 def login():
+    db = Link_db()
+
     if request.method == 'POST':
-        myjson=json.loads(request.get_data())
-        username=myjson['username']
-        password=myjson['password']
+        myjson = json.loads(request.get_data())
+        username = myjson['username']
+        password = myjson['password']
+        sql = "select * from users where user_name=\"" + username + "\""
+        result = db.select(sql)
+
         data={}
-        if(username=="admin" and password=="admin"):
-            data['privilege']= 2
+        if (len(result) == 0):
+            data['privilege'] = 0
             return jsonify(data)
-        elif(password=="123456"):
-            data['privilege'] = 1
+        elif (password == result[0][3]):
+            data['privilege'] = result[0][4]
             return jsonify(data)
         else:
             data['privilege'] = 0
@@ -29,42 +36,138 @@ def login():
 def daka():
     if request.method == 'POST':
         myjson = json.loads(request.get_data())
-        username=myjson['username']
-        banci=myjson['banci']
-        data={}
-        if(banci=='2018.5.30 9:00 签到'):
-            data['status']='打卡成功！'
-        else:
-            data['status']='打卡失败！'
+        username = myjson['username']
+        this_banci = myjson['banci']
+        data = {}
+
+        localtime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+        db = Link_db()
+
+        # 获取员工部门信息
+        sql = "select * from users where user_name=\"" + username + "\""
+        users_data = db.select(sql)
+        id = users_data[0][1]
+        bumen = users_data[0][5]
+        # 获取部门的班次信息
+        sql = "select * from banci_info where bumen=\"" + bumen + "\""
+        banci_data = db.select(sql)
+        # check当前时间是否在可打卡的时间里;如果在，则打卡成功.
+        banci_info = "none"
+        for i in range(len(banci_data)):
+            s = banci_data[i][1]
+            e = banci_data[i][2]
+            star = datetime.datetime.strptime(s, '%Y-%m-%d %H:%M:%S')
+            end = datetime.datetime.strptime(e, '%Y-%m-%d %H:%M:%S')
+            interval = banci_data[i][3]
+            clock_status = '打卡失败！'
+            if datetime.datetime.strptime(this_banci, '%Y-%m-%d %H:%M:%S') == star:
+                if star - datetime.timedelta(minutes=interval) < localtime < star:
+                    clock_status = '打卡成功！'
+                    banci_info = s + " 签到"
+                    break
+            elif datetime.datetime.strptime(this_banci, '%Y-%m-%d %H:%M:%S') == end:
+                if end < localtime < end + datetime.timedelta(minutes=interval):
+                    clock_status = '打卡成功！'
+                    banci_info = e + " 签退"
+                    break
+        data['status'] = clock_status
+        # 打卡成功，向clock_info插入一条新数据。
+        if clock_status == '打卡成功！':
+            sql = "insert into clock_info (user_id,Clock_time,banci) values (\"" + id + "\",\"" + localtime.strftime(
+                "%Y-%m-%d %H:%M:%S") + "\",\"" + banci_info + "\")"
+            affect = db.update(sql)
+            print("修改了")
+            print(affect)
         return jsonify(data)
 
 @app.route('/daka/banci', methods=['POST'])
 def getbanci():
     if request.method == 'POST':
         myjson = json.loads(request.get_data())
-        username=myjson['username']
-        data={}
-        data['banci']='2018.5.30 9:00'
-        data['status']='finished'
+        username = myjson['username']
+        data = {}
+
+        localtime = datetime.datetime.now()
+        db = Link_db()
+
+        # 获取员工部门信息
+        sql = "select * from users where user_name=\"" + username + "\""
+        users_data = db.select(sql)
+        id = users_data[0][1]
+        bumen = users_data[0][5]
+        # 获取部门的班次信息
+        sql = "select * from banci_info where bumen=\"" + bumen + "\""
+        banci_data = db.select(sql)
+        # 获取打卡信息表里该员工的所有记录
+        sql = "select * from clock_info where user_id=\"" + id + "\""
+        clock_data = db.select(sql)
+        # check当前时间是否在可打卡的时间里
+        banci = "none"
+        for i in range(len(banci_data)):
+            s = banci_data[i][1]
+            e = banci_data[i][2]
+            star = datetime.datetime.strptime(s, '%Y-%m-%d %H:%M:%S')
+            end = datetime.datetime.strptime(e, '%Y-%m-%d %H:%M:%S')
+            interval = banci_data[i][3]
+            if star - datetime.timedelta(minutes=interval) < localtime < star:
+                banci = s
+                break
+            elif end < localtime < end + datetime.timedelta(minutes=interval):
+                banci = e
+                break
+        # 如果在可打卡的时间里，check是否已完成打卡
+        status = "unfinished"
+        if banci != "none":
+            for i in range(len(clock_data)):
+                print(clock_data[i][2])
+                clockTime = datetime.datetime.strptime(clock_data[i][2], '%Y-%m-%d %H:%M:%S')
+                if (star - datetime.timedelta(minutes=interval) < clockTime < star) or (
+                                end < clockTime < end + datetime.timedelta(minutes=interval)):
+                    status = "finished"
+
+        data['banci'] = banci
+        data['status'] = status
         return jsonify(data)
 
+# 打卡历史记录界面获取可以查询的月份
 @app.route('/query/month', methods=['POST'])
 def getmonth():
+    db = Link_db()
+
     if request.method == 'POST':
-        myjson = json.loads(request.get_data())
-        month=["2018.6","2018.4","2018.5"]
+        sql = "select strftime('%Y.%m', Clock_time) as month from clock_info group by month"
+        result = db.select(sql)
+        print(result)
+        month = []
+        for m in range(len(result)):
+            month.append(result[m][0])
+
+        myjson = json.loads(request.get_data())  #假装发送数据。不用管里面的内容。反正请求了就返回就行了
+        # month=["2018.6","2018.4","2018.5"]
         mydict={"month":month}
         return jsonify(mydict)
+
+# 按照日期查询所有数据
 @app.route('/query/data', methods=['POST'])
 def getdata():
     if request.method == 'POST':
         myjson = json.loads(request.get_data())
-        date=myjson['date']
+        date=myjson['date'] #2018.05.31
         data={}
         list=[]
-        dict1={'userid':"2333",'username':"jack","time":date+ " 8:00","banci":date+" 9:00 签到"}
-        for  i in range(80):
-            list.append(dict1)
+        db = Link_db()
+        sql = "select * from clock_info where Clock_time like \"" + date + "%\""
+        result1 = db.select(sql)
+
+        for r in range(len(result1)):# 搜出来的数据量
+            record = {}
+            record["userid"] = result1[r][1]# 员工编号
+            sql2 = "select user_name from users where user_id = \"" + record["userid"] + "\""
+            user_name = db.select(sql2)
+            record["username"] = user_name[0][0]
+            record["time"] = result1[r][2]
+            record["banci"] = result1[r][3]
+            list.append(record)
         data['data']=list
         return jsonify(data)
 
@@ -88,33 +191,71 @@ def querychange():
 def changepassword():
     if request.method == 'POST':
         myjson = json.loads(request.get_data())
-        oldpassword=myjson['oldpassword']
-        username=myjson['username']
+        oldpassword = myjson['oldpassword']
+        username = myjson['username']
         newpassword = myjson['newpassword']
-        if(oldpassword!=newpassword):
+
+        # 先查询是否原密码正确
+        db = Link_db()
+        sql3 = "select * from users where user_name=\"" + username + "\""
+        result2 = db.select(sql3)
+        passwprd = str(result2[0][3])
+        if (oldpassword == passwprd):  # 再进行修改
+            sql = "update users set password=" + newpassword + " where user_name=\"" + username + "\""
+            result = db.update(sql)
             status = {'status': "success"}
-        else:
+        else:  # 旧密码不匹配
             status = {'status': "failed"}
+
         return jsonify(status)
 
 @app.route('/bumen', methods=['POST'])
 def getbumen():
     if request.method == 'POST':
         myjson = json.loads(request.get_data())
-        bumen=["清洁部","死亡部","睡觉部","打牌部"]
-        mydict={"bumen":bumen}
+        db = Link_db()
+        sql = "select * from users group by staff_bumen"
+        result = db.select(sql)
+        bumen = []
+        for x in result:
+            if (x[5] != None):
+                bumen.append(x[5])
+
+        mydict = {"bumen": bumen}
         return jsonify(mydict)
 
 @app.route('/information', methods=['POST'])
 def getinformation():
     if request.method == 'POST':
         myjson = json.loads(request.get_data())
-        bumen=myjson['bumen']
-        user1={'userid':"2333",'username':"jack","bumen":bumen}
-        list=[]
-        for i in range(20):
-            list.append(user1)
-        mydict={"information":list}
+        bumen = myjson['bumen']
+
+        if (bumen == "none"):  # 返回所有员工信息
+            list = []
+            db = Link_db()
+            sql = "select * from users"
+            result = db.select(sql)
+            list = []
+            for x in result:
+                user = {}
+                user["userid"] = x[1]
+                user["username"] = x[2]
+                user["bumen"] = x[5]
+                list.append(user)
+
+        else:  # 返回相关部门员工信息
+            db = Link_db()
+            sql = "select * from users where staff_bumen=\"" + bumen + "\""
+            result = db.select(sql)
+            list = []
+            for x in result:
+                user = {}
+                user['userid'] = x[1]
+                user['username'] = x[2]
+                user['bumen'] = x[5]
+                list.append(user)
+
+        mydict = {"information": list}
         return jsonify(mydict)
 
 
@@ -135,30 +276,54 @@ def changeinformation():
 def banciget():
     if request.method == 'POST':
         myjson = json.loads(request.get_data())
-        banci1={'username':"admin", 'bumen':"清洁部",'start':"2018.5.30 9:00", 'end':"2018.5.30 20:00", 'interval':15}
-        list=[]
-        for i in range(10):
-            list.append(banci1)
 
-        mydict={'banci':list}
+        db = Link_db()
+        sql = "select * from banci_info"
+        result = db.select(sql)
+        print(result)
+        print("\n")
+        list = []
+        for x in result:
+            banci = {}
+            banci['id'] = str(x[0])
+            banci['bumen'] = x[4]
+            banci['start'] = x[1]
+            banci['end'] = x[2]
+            banci['interval'] = str(x[3])
+            list.append(banci)
+        print(list)
+        mydict = {'banci': list}
+
         return jsonify(mydict)
 
 @app.route('/banci/change', methods=['POST'])
 def bancichange():
     if request.method == 'POST':
         myjson = json.loads(request.get_data())
-        username = myjson['username']
+        id = myjson['id']
         bumen = myjson['bumen']
         start = myjson['start']
         end = myjson['end']
         interval = myjson['interval']
-        caozuo=myjson['caozuo']
-        status = {'status': "success"}
+        caozuo = myjson['caozuo']
+
+        db = Link_db()
+        if (caozuo == "change"):  # 改动
+            sql = "update banci_info set bumen=\"" + bumen + "\",start=\"" + start + "\",end=\"" + end + "\",interval=\"" + interval + "\"  where banci_id=" + id
+            db.update(sql)
+
+        elif (caozuo == "delete"):  # 删除
+            sql = "delete from banci_info where banci_id=" + id
+            db.update(sql)
+
+        elif (caozuo == "add"):  # 增加
+            sql = "insert into banci_info(start,end,interval,bumen) values(\"" + start + "\",\"" + end + "\"," + interval + ",\"" + bumen + "\")"
+            db.update(sql)
+
+        status = {'status': 'success'}
         return jsonify(status)
 
 
-
-
-
 if __name__ == '__main__':
-    app.run(host='0.0.0.0',port=23333)
+    # app.run(host='0.0.0.0',port=23333)
+    app.run(debug=True, port=8000)

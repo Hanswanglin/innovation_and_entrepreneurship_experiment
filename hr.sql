@@ -3,29 +3,32 @@ CREATE TABLE IF NOT EXISTS `users` (
 	`id`	INTEGER NOT NULL UNIQUE,
 	`user_id`	TEXT UNIQUE,
 	`user_name`	TEXT NOT NULL UNIQUE,
-	`password`	INTEGER NOT NULL UNIQUE,
+	`password`	TEXT NOT NULL,
 	`role`	INTEGER NOT NULL,
 	`staff_bumen`	TEXT,
 	PRIMARY KEY(`id`)
 );
-INSERT INTO `users` VALUES (1,'','admin',123,2,NULL);
+INSERT INTO `users` VALUES (1,'','admin','123',2,NULL);
 INSERT INTO `users` VALUES (2,'001','hans','qaz',1,'管理部门');
-INSERT INTO `users` VALUES (3,'101','Berk',233,1,'开发部门');
+INSERT INTO `users` VALUES (3,'101','Berk','233',1,'开发部门');
 CREATE TABLE IF NOT EXISTS `clock_info` (
 	`id`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
-	`user_id`	INTEGER NOT NULL,
+	`user_id`	TEXT NOT NULL,
 	`Clock_time`	TEXT NOT NULL,
-	`Create_time`	TEXT NOT NULL,
-	`Update_time`	TEXT
+	`banci`	TEXT NOT NULL
 );
+INSERT INTO `clock_info` VALUES (1,'001','2018-05-31 09:02:23','2018-05-31 09:02:23 签到');
+INSERT INTO `clock_info` VALUES (2,'101','2018-05-31 09:01:23','2018-05-31 09:02:23 签到');
+INSERT INTO `clock_info` VALUES (4,'001','2018-06-28 04:14:30','2018-06-28 04:18:00 签到');
 CREATE TABLE IF NOT EXISTS `banci_info` (
 	`banci_id`	INTEGER NOT NULL UNIQUE,
-	`star`	TEXT NOT NULL,
+	`start`	TEXT NOT NULL,
 	`end`	TEXT NOT NULL,
 	`interval`	INTEGER NOT NULL,
 	`bumen`	TEXT NOT NULL,
-	`creat_time`	TEXT NOT NULL,
-	`update_time`	TEXT NOT NULL,
 	PRIMARY KEY(`banci_id`)
 );
+INSERT INTO `banci_info` VALUES (3,'2018-05-31 09:02:23','2018-05-31 20:02:23',15,'管理部门');
+INSERT INTO `banci_info` VALUES (4,'2018-05-31 09:02:23','2018-05-31 20:02:23',15,'开发部门');
+INSERT INTO `banci_info` VALUES (5,'2018-06-28 04:18:00','2018-06-28 03:22:11',20,'管理部门');
 COMMIT;
