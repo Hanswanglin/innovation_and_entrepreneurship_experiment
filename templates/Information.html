@@ -2,6 +2,7 @@
 {% block body %}
 		
 		<h2> 员工信息管理</h2>
+		
 		{% for i in allbumen %}
 		{% if i==nowbumen %}
 		<input type="button" class="btn btn-info" value="{{ i }}" disabled>
@@ -10,7 +11,7 @@
 		{% endif %}
 		
 		{% endfor %}
-		<button class="btn btn-default btn-lg" onclick="show3();">增加一个员工</button>
+		
 		
 		<div class="table-responsive">
             <table class="table table-striped">
@@ -48,7 +49,7 @@
 		
 		
         </div>
-		
+		<button class="btn btn-default" onclick="show3();">增加一个员工</button><br/>
 		<div class="pull-right">
 			<ul class="pagination"> 
 			
