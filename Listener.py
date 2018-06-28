@@ -110,7 +110,7 @@ def daka():
             elif(status=='finished'):
                 return render_template('daka.html', name=username, banci=banci,button="打卡完成")
         else:
-            return render_template('daka.html', name=username, banci=banci, button="无需打卡")
+            return render_template('daka.html', name=username, banci=banci, button="无班次")
     except:
         return redirect(url_for("Error"))
 

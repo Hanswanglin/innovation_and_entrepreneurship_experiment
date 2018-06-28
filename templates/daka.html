@@ -111,13 +111,18 @@ $.ajax({
 					</tbody>
 				</table>
 				<p align=center>
-				{% if button %}
-				<input type="button" class="btn btn-lg" id="dakaBUTTON" value="{{ button }}" disabled>
+				{% if button=="无班次" %}
+				<input type="image" src="../static/button/nobanci.png" id="dakaBUTTON" width="150px" height="80px" disabled>
+				{% elif button=="打卡完成" %}
+				<input type="image" src="../static/button/finished.png" id="dakaBUTTON" width="150px" height="80px" disabled>
 				{% else %}
-				<input type="button" class="btnbtn-lg" id="dakaBUTTON" value="立刻打卡" onClick="daka()">
+				<input type="image" src="../static/button/daka1.png" 
+				onmousemove="this.src='../static/button/daka2.png'" onmouseout="this.src='../static/button/daka1.png'"
+				id="dakaBUTTON" width="150px" height="80px" onClick="daka()">
 				{% endif %}
-				
 				</p>
+				
+				
 				
 				
 				
