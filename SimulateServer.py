@@ -13,7 +13,6 @@ app.config['JSON_AS_ASCII'] = False
 @app.route('/login', methods=['POST'])
 def login():
     db = Link_db()
-
     if request.method == 'POST':
         myjson = json.loads(request.get_data())
         username = myjson['username']
@@ -76,8 +75,6 @@ def daka():
             sql = "insert into clock_info (user_id,Clock_time,banci) values (\"" + id + "\",\"" + localtime.strftime(
                 "%Y-%m-%d %H:%M:%S") + "\",\"" + banci_info + "\")"
             affect = db.update(sql)
-            print("修改了")
-            print(affect)
         return jsonify(data)
 
 @app.route('/daka/banci', methods=['POST'])
@@ -124,7 +121,6 @@ def getbanci():
                 if (star - datetime.timedelta(minutes=interval) < clockTime < star) or (
                                 end < clockTime < end + datetime.timedelta(minutes=interval)):
                     status = "finished"
-
         data['banci'] = banci
         data['status'] = status
         return jsonify(data)
@@ -142,8 +138,7 @@ def getmonth():
         for m in range(len(result)):
             month.append(result[m][0])
 
-        myjson = json.loads(request.get_data())  #假装发送数据。不用管里面的内容。反正请求了就返回就行了
-        # month=["2018.6","2018.4","2018.5"]
+        myjson = json.loads(request.get_data())
         mydict={"month":month}
         return jsonify(mydict)
 
@@ -171,20 +166,35 @@ def getdata():
         data['data']=list
         return jsonify(data)
 
+
 @app.route('/query/change', methods=['POST'])
 def querychange():
     if request.method == 'POST':
         myjson = json.loads(request.get_data())
-        userid=myjson['userid']
-        username=myjson['username']
-        time=myjson['time']
-        banci=myjson['banci']
-        beizhu=myjson['beizhu']
-        caozuo=myjson['caozuo']
-        if(caozuo == 'delete')or (caozuo=='change') or (caozuo=='add'):
-            status={'status':"成功"}
+        userid = myjson['userid']
+        username = myjson['username']
+        time = myjson['time']
+        banci = myjson['banci']
+        beizhu = myjson['beizhu']
+        caozuo = myjson['caozuo']
+
+        db = Link_db()
+        if (caozuo == 'delete'):
+            sql1 = "delete from clock_info where user_id=\"" + userid + "\" and Clock_time=\"" + time + "\""
+            db.update(sql1)
+            status = {'status': "success"}
+        elif (caozuo == 'change'):
+            ##只能根据userid和banci更改time
+            sql1 = "update clock_info set  Clock_time=\"" + time + "\" where user_id=\"" + userid + "\" and banci=\"" + banci + "\""
+            db.update(sql1)
+            status = {'status': "success"}
+        elif (caozuo == 'add'):
+            sql1 = "insert into clock_info(user_id,Clock_time,banci) values(\"" + userid + "\",\"" + time + "\",\"" + banci + "\")"
+            db.update(sql1)
+            status = {'status': "success"}
         else:
             status = {'status': "failed"}
+
         return jsonify(status)
 
 @app.route('/information/password', methods=['POST'])
@@ -206,7 +216,6 @@ def changepassword():
             status = {'status': "success"}
         else:  # 旧密码不匹配
             status = {'status': "failed"}
-
         return jsonify(status)
 
 @app.route('/bumen', methods=['POST'])
@@ -265,9 +274,53 @@ def changeinformation():
         myjson = json.loads(request.get_data())
         userid = myjson['userid']
         username = myjson['username']
-        bumen=myjson['bumen']
-        password=myjson['password']
-        beizhu=myjson['beizhu']
+        bumen = myjson['bumen']
+        password = myjson['password']
+        beizhu = myjson['beizhu']
+
+        # 进行修改
+        db = Link_db()
+        if (password == ''):
+            sql = "update users set staff_bumen=\"" + bumen + "\" where user_id=" + userid
+            result = db.update(sql)
+        else:
+            sql = "update users set staff_bumen=\"" + bumen + "\",password=\"" + password + "\" where user_id=" + userid
+            result = db.update(sql)
+
+        status = {'status': "success"}
+        return jsonify(status)
+
+#  备用，全面的
+@app.route('/information/change2', methods=['POST'])
+def changeinformation2():
+    if request.method == 'POST':
+        myjson = json.loads(request.get_data())
+        userid = myjson['userid']
+        username = myjson['username']
+        bumen = myjson['bumen']
+        password = myjson['password']
+        beizhu = myjson['beizhu']
+        caozuo = myjson['caozuo']
+
+        db = Link_db()
+        if (caozuo == "add"):  # 进行增加
+            sql = "insert into users(user_id,user_name,staff_bumen,password,role) values(\"" + userid + "\",\"" + username + "\",\"" + bumen + "\",\"" + password + "\",1)"
+            db.update(sql)
+            status = {'status': "added"}
+        elif (caozuo == "change"):  # 修改，会看一下password对不对
+
+            if (password == ''):
+                sql = "update users set staff_bumen=\"" + bumen + "\" where user_id=" + userid
+                db.update(sql)
+            else:
+                sql = "update users set staff_bumen=\"" + bumen + "\",password=\"" + password + "\" where user_id=" + userid
+                db.update(sql)
+            status = {'status': "changed"}
+        elif (caozuo == "delete"):
+            sql = "delete from users where user_id=" + userid
+            db.update(sql)
+            status = {'status': "deleted"}
+
         status = {'status': "success"}
         return jsonify(status)
 
