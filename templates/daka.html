@@ -35,7 +35,7 @@ for (var i=0; i<allcookies.length; i++)
   
 function daka(){
 var Name=document.getElementById("name").innerHTML;
-var Banci=document.getElementById("banci").innerHTML;
+var Banci='{{banci}}';
 var dict1={"username":Name,"banci":Banci};
 $.ajax({
 		  type: "post",
@@ -91,9 +91,7 @@ $.ajax({
 				<thead>
                 <tr>
 					<th>日期</th>
-					<th>开始时间</th>
-					<th>结束时间</th>
-					<th>类型</th>
+					<th>时间</th>
 					
                 </tr>
               </thead>
@@ -101,10 +99,10 @@ $.ajax({
 						
 						<tr>
 							<td>
-							<p>日期</p>
+							<p>{{date}}</p>
 							</td>
 							<td>
-							<p id="banci">{{ banci }}</p>
+							<p>{{ time }}</p>
 							</td>
 						</tr>
 						

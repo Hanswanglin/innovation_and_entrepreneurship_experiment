@@ -105,10 +105,13 @@ def daka():
         banci=mydict['banci']
         status=mydict['status']
         if(banci!='none'):
+            array=banci.split()
+            time=array[1]
+            date=array[0]
             if(status=='unfinished'):
-                return render_template('daka.html', name=username, banci=banci)
+                return render_template('daka.html', name=username, banci=banci,time=time,date=date)
             elif(status=='finished'):
-                return render_template('daka.html', name=username, banci=banci,button="打卡完成")
+                return render_template('daka.html', name=username, banci=banci,button="打卡完成",time=time,date=date)
         else:
             return render_template('daka.html', name=username, banci=banci, button="无班次")
     except:
