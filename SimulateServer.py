@@ -39,7 +39,7 @@ def daka():
         this_banci = myjson['banci']
         data = {}
 
-        localtime = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+        localtime = datetime.datetime.now()
         db = Link_db()
 
         # 获取员工部门信息
@@ -353,7 +353,7 @@ def banciget():
 def bancichange():
     if request.method == 'POST':
         myjson = json.loads(request.get_data())
-        id = myjson['id']
+
         bumen = myjson['bumen']
         start = myjson['start']
         end = myjson['end']
@@ -362,10 +362,12 @@ def bancichange():
 
         db = Link_db()
         if (caozuo == "change"):  # 改动
+            id = myjson['id']
             sql = "update banci_info set bumen=\"" + bumen + "\",start=\"" + start + "\",end=\"" + end + "\",interval=\"" + interval + "\"  where banci_id=" + id
             db.update(sql)
 
         elif (caozuo == "delete"):  # 删除
+            id = myjson['id']
             sql = "delete from banci_info where banci_id=" + id
             db.update(sql)
 

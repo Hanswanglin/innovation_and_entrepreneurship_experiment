@@ -1,6 +1,8 @@
 def GetPageDict(nowpage, data,pageoffset,maxshow):
     #nowpage 当前页 data 数据 pageoffset 每页最多条数 maxshow 显示出来的页数
     mydict = {}
+    if (len(data) == 0):
+        return {'page_list': [1], 'showdict': [], 'showye': 0, 'nowpage': 1, 'total': 1}
 
     total = len(data) / pageoffset
     if (total > int(total)):
@@ -61,19 +63,23 @@ def upinteger(a,b):
     return result
 
 def getstartmonth(month):
-    result={}
     year=9999999
     minmonth=13
     for i in month:
-        array=i.split('.')
-        if int(array[0])<year:
-            year=int(array[0])
+        if i!=None:
+            array=i.split('.')
+            if int(array[0])<year:
+                year=int(array[0])
     for i in month:
-        array=i.split('.')
-        if(int(array[0])==year):
-            if(int(array[1])<minmonth):
-                minmonth=int(array[1])
+        if i!=None:
+            array=i.split('.')
+            if(int(array[0])==year):
+                if(int(array[1])<minmonth):
+                    minmonth=int(array[1])
     minmonth-=1
     return str(year)+','+str(minmonth)+',1'
 
 
+def changedate(date):
+    array=date.split('.')
+    return array[0]+'-'+array[1]+'-'+array[2]

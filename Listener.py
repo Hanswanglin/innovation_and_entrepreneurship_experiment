@@ -9,7 +9,7 @@ app.config.update(dict(DEBUG=True, SECRET_KEY='Chuangxin!!!!!233', ))
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 CORS(app, supports_credentials=True)
 ip="localhost"
-port=23333
+port=8000
 pageoffset=9
 firstpage=1
 maxshow=5
@@ -20,7 +20,7 @@ url_change_history="http://%s:%s/query/change"% (ip,port)
 url_daka='http://%s:%s/daka/' %(ip,port)
 url_bumen='http://%s:%s/bumen' %(ip,port)
 url_information='http://%s:%s/information' %(ip,port)
-url_change_information='http://%s:%s/information/change' %(ip,port)
+url_change_information='http://%s:%s/information/change2' %(ip,port)
 url_change_password='http://%s:%s/information/password'%(ip,port)
 url_banci_get='http://%s:%s/banci/get'%(ip,port)
 url_banci_change='http://%s:%s/banci/change'%(ip,port)
@@ -153,8 +153,8 @@ def history():
     result = json.loads(result)
     data=result['month']
     start=Caculate.getstartmonth(data)
-
-    data = {"date": date}
+    date1=Caculate.changedate(date)
+    data = {"date": date1}
     result = GetData(url_data, data)
     result = json.loads(result)
     data=result['data']
